@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Video Search Engine </title>
+ 	<meta charset="utf-8">
+  	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<!-- jQuery library -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+	<!-- Latest compiled JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<body>
+	<div class="container" style = "padding : 20px;">
+  		<div class="row">
+  			<div class = "col-md-2"><h4>Video Search</h4></div>
+  			<div class = "col-md-7">
+            <form action="http://localhost:5000" method="GET">
+              <div class="form-group" style = "float : left; width :80%">
+                <input type="text" name="q" id="query_txt" class="form-control">
+              </div>
+              <div style = "float : right ; width :20%">
+                <input class="btn btn-info" class="form-control" type="submit" id="search_bttn" value="SEARCH" >
+              </div>
+            </form>
+  			</div>
+  			<div class = "col-md-3">
+  			  	{% if session['username'] %}
+  				<div class="dropdown">
+				  <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Hello {{ session['username'] }}
+				  <span class="caret"></span></button>
+				  <ul class="dropdown-menu">
+				    <li><a href="playlist">Your Playlists</a></li>
+				    <li><a href="history">History</a></li>
+				    <!-- <li><a href="#">Your Liked Videos</a></li> -->
+				    <li><a href="logout">Logout</a></li>
+				  </ul>
+				</div>
+				{% else %}
+				<div class="btn-group">
+					<!-- <form action = "/authenticate" method=> -->
+  						<a href="login"><button type="button" class="btn btn-primary">SignIn/SignUp</button></a>
+  					<!-- </form> -->
+  				</div>
+  				{% endif %}
+  			</div>
+  		</div>
+  		<div class="row">
+  			<nav class="navbar navbar-default">
+			  <div class="container-fluid">
+			    <ul class="nav navbar-nav">
+			      <li class="active"><a href="/">Home</a></li>
+			      <li><a href="/mostViewed">Most Viewed</a></li>
+			      <li><a href="/mostLiked">Most Liked</a></li>
+			      <!-- <li><a href="#">Top Playlists</a></li> -->
+			    </ul>
+			  </div>
+			</nav>
+  		</div>
+  		<div class = "row">	
+  			<div class ="col-md-1"></div>
+  			<div class="col-md-8">
+	  			<div class ="panel panel-default">
+	            <div class="panel-heading"><h4><b>Search Results</b></h4>
+	            <b>results of 500</b></div>
+
+	            <div class="panel-body">
+  				<table>
+	          	{% if q_results %}
+	            	{% for res in q_results %}
+	              	<tr>
+	                	<td>
+	                  	<div class="panel panel-default">
+	                      	<div class="col-lg-4">
+	                        <a href="http://localhost:5000/update_history?q={{ q }}&&v={{ res.videoInfo.id }}"><img src=" {{ res.videoInfo.snippet.thumbnails.default.url }} " class="img-thumbnail" width="200" height="150"></a>
+	                      	</div>
+	                    	<div class="col-lg-8">
+	                    		<b> {{ res.videoInfo.snippet.title }}</b>
+	        				</div>                    
+	                  	</div>
+	                	</td>
+	              	</tr>
+	            	{% endfor %}
+	          	{% endif %}
+	          </table>
+	          </div>
+  			</div>
+  		</div>
+	</div>
+
+</body>
+</html>

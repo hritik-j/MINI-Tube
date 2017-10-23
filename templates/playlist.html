@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Video Search Engine</title>
+ 	<meta charset="utf-8">
+  	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<!-- jQuery library -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+	<!-- Latest compiled JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<body style="background-color:#F1F1F1">
+	<div class="container" style = "padding : 20px">
+  		<div class="row">
+  			<div class = "col-md-2"><h3>MINI Tube</h3></div>
+  			<div class = "col-md-8">
+            <form action="http://localhost:5000" method="GET">
+              <div class="form-group" style = "float : left; width :80%">
+                <input type="text" name="q" id="query_txt" class="form-control">
+              </div>
+              <div style = "float : right ; width :20%">
+                <input class="btn btn-primary" class="form-control" type="submit" id="search_bttn" value="SEARCH" >
+              </div>
+            </form>
+  			</div>
+  			<div class = "col-md-2">
+  			  {% if session['username'] %}
+  				<div class="dropdown">
+            <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Hello {{ session['username'] }}
+            <span class="caret"></span></button>
+            <ul class="dropdown-menu">
+              <li><a href="playlist">Your Playlists</a></li>
+              <li><a href="history">History</a></li>
+              <!-- <li><a href="#">Your Liked Videos</a></li> -->
+              <li><a href="logout">Logout</a></li>
+          </ul>
+        </div>
+				{% else %}
+				<div class="btn-group">
+					<!-- <form action = "/authenticate" method=> -->
+  						<a href="login"><button type="button" class="btn btn-primary">SignIn/SignUp</button></a>
+  					<!-- </form> -->
+  				</div>
+  				{% endif %}
+  			</div>
+  		</div>
+  		<div class="row">
+        <div class="col-lg-3"></div>
+        <div class="col-lg-6">
+          <nav class="navbar navbar-default" style="background-color:#FFFFFF">
+            <div class="container-fluid" style="position:relative;left:8vw" >
+              <ul class="nav navbar-nav">
+                <li class=""><a href="/"><b>Home</b></a></li>
+                <li><a href="/mostViewed"><b>Most Viewed</b></a></li>
+                <li><a href="/mostLiked"><b>Most Liked</b></a></li>
+                <!-- <li><a href="#">Top Playlists</a></li> -->
+              </ul>
+            </div>
+          </nav>
+        </div>
+        <div class="col-lg-3"></div>
+        
+      </div>
+
+
+ 		<div class = "row">	
+  			<div class ="col-md-4">
+  				<a href='/createPlaylist.html'><h3><b>Create New Playlist</b></h3></a>
+  				<!-- <a href=""><h4>Your Liked PLaylist</h4></a> -->
+  				<br>
+  			</div>
+  		</div>
+
+  		<div class = "row">	
+        <div class="col-lg-1"></div>
+  			<div class="col-md-9">
+  				<div class ="panel panel-default">
+            <div class="panel-body" style="position:relative;left:23vw"><h3><b>Your Playlists</b></h3></div>
+            
+  				<table>
+	          	{% if user_playlist %}
+	            	<!-- <h3>Your playlists: </h3> -->
+	            	{% for res in user_playlist %}
+	              	<tr>
+	                	<td>
+	                		<div class="panel panel-default" style="width:30vw">
+	                			<div class="panel-heading"><a href="/playlist?pid={{ res.id }}"><b>{{ res.name }}</b></a><br></div>
+	                			<div class="panel-body">{{ res.description }}</div>
+	                				
+	        				</div>
+	                	</td>
+	              	</tr>
+	            	{% endfor %}
+	          	{% endif %}
+	          </table>
+  			</div>
+  		</div>
+	</div>
+
+</body>
+</html>

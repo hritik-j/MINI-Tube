@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Video Search Engine</title>
+ 	<meta charset="utf-8">
+  <link rel="stylesheet" href="{{ url_for('static', filename = 'css/bootstrap.min.css') }}">
+  <script src = "{{ url_for('static', filename = 'js/jquery.min.js') }}"></script>
+  <script src = "{{ url_for('static', filename = 'js/bootstrap.min.js') }}"></script> 
+    <!-- Latest compiled and minified CSS -->
+  <script type="text/javascript">
+  	$( document ).ready(function() {
+  		$(".pid_btn").click(function(){
+  			var name = $(this).attr("name")
+  			$.ajax({
+  				url:"/addToPlaylist?v={{ v }}&&pid="+name,
+  				type:"GET",
+  				success:function(result){
+  					console.log(result)
+  				}
+  			})
+
+  		});
+
+  		$('#comment_btn').click(function(){
+  			comment = $('#comment').val()
+  			$.ajax({
+  			 url:"/addComment",
+  			 type: "POST",
+  			 data:{
+  			 	'v' : '{{ v }}',
+  			 	'comment': comment
+  			 },
+  			 success:function(result){
+  			 	console.log(result)
+  			 	$('#comment').val(" ")
+
+  			 }
+
+  			})
+  		})
+	    $('#like_btn').click(function(){
+
+	    	if ($(this).text() === "Like") {
+	    		$.ajax({url: "/stats/{{ v }}?attr=like&&action=1",type: "GET", success:function(result){
+		    		if (result == "Success") {
+		    			$('#like_btn').text("Liked")
+			    		$('#like_btn').removeClass('btn-primary')
+			    		$('#like_btn').addClass('btn-danger')
+			    		$('#dislike_btn').text("Dislike")
+			    		$('#dislike_btn').removeClass('btn-danger')
+			    		$('#dislike_btn').addClass('btn-primary')
+			    		console.log(result)
+		    		}
+		    	}});
+			    		
+	    	}
+	    	else if ($(this).text() === "Liked") {
+	    		$.ajax({url: "/stats/{{ v }}?attr=like&&action=0",type: "GET", success:function(result){
+		    		if (result == "Success") {
+		    			$('#like_btn').text("Like")
+			    		$('#like_btn').removeClass('btn-danger')
+			    		$('#like_btn').addClass('btn-primary')
+			    		console.log(result)
+		    		}
+		    	}});
+			    
+	    	}
+	    	else{
+	    	}
+	    });
+	    $('#dislike_btn').click(function(){
+	    	if ($(this).text() === "Dislike") {
+	    		$.ajax({url: "/stats/{{ v }}?attr=dislike&&action=1",type: "GET", success:function(result){
+		    		if (result == "Success") {
+		    			$('#dislike_btn').text("Disliked")
+			    		$('#dislike_btn').removeClass('btn-primary')
+			    		$('#dislike_btn').addClass('btn-danger')
+			    		$('#like_btn').text("Like")
+			    		$('#like_btn').removeClass('btn-danger')
+			    		$('#like_btn').addClass('btn-primary')
+			    		console.log(result)
+		    		}
+		    	}});
+			    		
+	    	}
+
+	    	else if ($(this).text() === "Disliked") {
+	    		$.ajax({url: "/stats/{{ v }}?attr=dislike&&action=0",type: "GET", success:function(result){
+		    		if (result == "Success") {
+		    			$('#dislike_btn').text("Dislike")
+			    		$('#dislike_btn').removeClass('btn-danger')
+			    		$('#dislike_btn').addClass('btn-primary')
+			    		console.log(result)
+		    		}
+		    	}});
+	    	}
+	    	else{
+	    	}
+	    });
+	    setInterval(
+	    	function(){
+	    		$.ajax({
+	  			 url:"/fetchComments",
+	  			 type: "POST",
+	  			 data:{
+	  			 	'v' : '{{ v }}',
+	  			 },
+	  			 success:function(result){
+	  			 	$('#commentBox').html(result)
+	  			 	// console.log(result)
+	  			 }
+
+	  			}) 
+	    	}
+	    , 1000);
+
+	});
+  </script>
+</head>
+<body>
+	<div class="container" style="padding : 20px;">
+  		<div class="row">
+  			<div class = "col-md-2"><h4>Video Index</h4></div>
+  			<div class = "col-md-7">
+            <form action="http://localhost:5000" method="GET">
+              <div class="form-group" style = "float : left; width :80%">
+                <input type="text" name="q" id="query_txt" class="form-control">
+              </div>
+              <div style = "float : right ; width :20%">
+                <input class="btn btn-info" class="form-control" type="submit" id="search_bttn" value="SEARCH" >
+              </div>
+            </form>
+  			</div>
+  			<div class = "col-md-3">
+  			  	{% if session['username'] %}
+  				<div class="dropdown">
+				  <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Hello {{ session['username'] }}
+				  <span class="caret"></span></button>
+				  <ul class="dropdown-menu">
+				    <li><a href="playlist">Your Playlists</a></li>
+				    <li><a href="history">History</a></li>
+				    <!-- <li><a href="#">Your Liked Videos</a></li> -->
+				    <li><a href="logout">Logout</a></li>
+				  </ul>
+				</div>
+				{% else %}
+				<div class="btn-group">
+					<!-- <form action = "/authenticate" method=> -->
+  						<a href="login"><button type="button" class="btn btn-primary">SignIn/SignUp</button></a>
+  					<!-- </form> -->
+  				</div>
+  				{% endif %}
+  			</div>
+  		</div>
+  		<div class="row">
+  			<nav class="navbar navbar-default">
+			  <div class="container-fluid">
+			    <ul class="nav navbar-nav">
+			      <li class="active"><a href="/">Home</a></li>
+			      <li><a href="/mostViewed">Most Viewed</a></li>
+			      <li><a href="/mostLiked">Most Liked</a></li>
+			      <!-- <li><a href="#">Top Playlists</a></li> -->
+			    </ul>
+			  </div>
+			</nav>
+  		</div>
+  		<div class = "row">	
+  			<div class = "col-lg-1">
+  			</div>
+	        <div class="col-lg-7">
+	          {% if v %}
+	          	<div class="row">
+	          		<iframe width="650" height="450" src="https://www.youtube.com/embed/{{ v }}?autoplay=1">
+	            	</iframe>
+	          	</div>
+	          	<div class="row">
+	          		<div class="col-lg-8">
+	          			<h3>{{ v_details.videoInfo.snippet.title }}</h3>
+	          		</div>
+	          		<div class="col-lg-4" style =" padding-top : 5%;">
+	          			{% if user_details['liked'] %}
+	          				<button class="btn btn-danger" id="like_btn">Liked</button>
+	          			{% else %}
+	          				<button class="btn btn-primary" id="like_btn">Like</button>
+	          			{% endif %}
+
+	          			{% if user_details['disliked'] %}
+	          				<button class="btn btn-danger" id="dislike_btn">Disliked</button>
+	          			{% else %}
+	          				<button class="btn btn-primary" id="dislike_btn">Dislike</button>
+	          			{% endif %}
+	          			
+	          		</div>
+	          	</div>
+	          	<div class="row">
+	          		<div class="col-lg-8">
+	          			<h4 id="like_count"><b>Channel Name</b>: {{ v_details.videoInfo.snippet.channelTitle}}</h4>
+	          			<div class="dropdown">
+						  <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Add To Playlist
+						  <span class="caret"></span></button>
+	          				{% if user_playlist %}
+
+						  <ul class="dropdown-menu">
+	            			{% for res in user_playlist %}
+						    	<li><a class="pid_btn" name="{{ res.id }}"> {{ res.name }} </a></li>
+			            	{% endfor %}
+						  </ul>
+		          			{% endif %}
+
+						</div>
+	          		</div>
+	          		<div class="col-lg-4">
+	          			<h4 id="like_count"><b>Like</b>: {{ v_details.videoInfo.statistics.likeCount }}</h4>
+	          			<h4 id="dislike_count" ><b>Dislike</b>: {{ v_details.videoInfo.statistics.dislikeCount }}</h4>
+	          			<h4 id="view_Count" ><b>View Count</b>: {{ v_details.videoInfo.statistics.viewCount }}</h4>
+	          		</div>
+	          	</div>
+	          	<div class="row" style = "padding : 5px">
+	          		<div class="panel panel-default">
+						<div class="panel-heading"><b>Published:</b> {{ v_details.videoInfo.snippet.publishedAt }}</div>
+						<div class="panel-body"><b>Description:</b> {{ v_details.videoInfo.snippet.localized.description }}</div>
+					</div>
+	          	</div>
+	          	<div class="row">
+	          		<div class="form-group">
+				  	<label for="comment">Comment:</label>
+				 		<input type="text" style="word-break:break-word;" class="form-control" rows="5" id="comment" name="comment"></input>
+				 		<input type="hidden" name="video_id" value="{{ v }}">
+				 		<div class="btn-group" style = "padding : 5px;">
+						  	<button type="button" class="btn btn-primary" id="comment_btn" name="comment_button" value="commented">Comment</button>
+							<!-- <button type="button" class="btn btn-primary" name="cancel_button" value="canceled">Cancel</button> -->
+						</div>
+					</div>
+	          	</div>
+	          	<div class="row" id="commentBox">
+	          		<!-- <div class="panel panel-default">
+						<div class="panel-body"><b>Top Comments</b><br>srhadfnda</div>
+	          		</div> -->
+	          	</div>
+	          	<!-- <div class="row">
+	          		<div class="panel panel-default">
+	          			<div class="panel-heading">Playlists containing this videos:</div>
+	          			<div class="panel-body"> Implement the playlists containing this <video></video></div>
+	          		</div>
+	          	</div> -->
+	            
+	          {% endif %}
+	  		</div>
+	        <div class="col-lg-4">
+	          <table>
+	          {% if v %}
+	            <h3>Recommended Videos: </h3>
+	            {% for res in v_recommended %}
+	              <tr>
+	                <td>
+	                  <div class="panel panel-default">
+	                      <div class="col-lg-4">
+	                        <a href="http://localhost:5000/update_history?q={{ q }}&&v={{ res.videoInfo.id }}"><img src=" {{ res.videoInfo.snippet.thumbnails.default.url }} " class="img-thumbnail" width="120" height="90"></a>
+	                      </div>
+	                      <div class="col-lg-8">
+	                        <b> {{ res.videoInfo.snippet.title }}</b>
+	                      </div>                    
+	                  </div>
+	                </td>
+	              </tr>
+	            {% endfor %}
+	          {% endif %}
+	          </table>
+	        </div>
+  		</div>
+	</div>
+
+</body>
+</html>
